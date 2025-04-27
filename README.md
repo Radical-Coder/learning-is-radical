@@ -1,97 +1,109 @@
-# Radical Coder — Learning is Radical
+# 🚀 Radical Coder — *Learning is Radical*
 
-🚀 Live Site: https://radical-coder.github.io/learning-is-radical/
+[![Live Site](https://img.shields.io/badge/Live%20Site-Visit-ff6b00?style=for-the-badge&logo=firefoxbrowser&logoColor=white)](https://radical-coder.github.io/learning-is-radical/)
 
-⸻
+---
 
-About
+> *Learning isn't just an act — it's a rebellion.*
 
-Radical Coder is a personal site and project showcase built using Vue 3 and TailwindCSS via CDNs — no build tooling or frameworks required.
-It serves as a living hub for my work, reflections, and experiments at the intersection of software engineering, AI innovation, and socio-technical critique.
+---
 
-Learning is Radical — and this space evolves as I do.
+## ✨ About
 
-⸻
+**Learning is Radical** is a personal site and project hub built with **Vue 3** and **TailwindCSS**,
+fully CDN-driven — no build tooling, no friction, no excuses.
 
-Features
+It exists to showcase real work, living reflections, and experiments
+at the edge of **software engineering**, **AI innovation**, and **socio-technical creativity**.
 
-✅ Vue 3 Component Architecture
-	•	All major sections (Navbar, Hero, About, Projects, Logs, Contact, Footer) are broken into reusable components.
-	•	Powered entirely by CDN-delivered Vue 3.
+---
 
-✅ TailwindCSS Utility-First Styling
-	•	Custom theme extension for accent colors and dark palette.
-	•	Responsive, accessible, mobile-friendly design out of the box.
+## 🔥 Features
 
-✅ Fully Static Deployment
-	•	Deployed via GitHub Pages — no node_modules, no bundlers, no build process.
-	•	Fast to clone, fast to modify, fast to ship.
+- **🧩 Component-Based:** Modular Vue 3 structure (Navbar, Hero, About, Projects, Logs, Contact, Footer)
+- **🎨 TailwindCSS Styling:** Custom dark theme with accent palette
+- **⚡ Instant Deploy:** Fully static GitHub Pages deployment — no npm, no bundling
+- **📈 Data-Driven Content:** Projects and Logs rendered dynamically from arrays (ready for external JSON later)
+- **📱 Mobile-First:** Responsive, fast, and lightweight
+- **🔮 Future-Proof:** Easily extensible into a full markdown blog or app launcher
 
-✅ Data-Driven Structure
-	•	Projects and Learning Logs rendered dynamically from component-local arrays.
-	•	Easy to extend — just add items, no need to hand-edit HTML.
+---
 
-✅ Future-Proofed for Growth
-	•	Built to optionally swap static arrays for JSON-driven dynamic loading.
-	•	Extensible for future Markdown-based blog posts, animations, or integrations.
+## 🛠️ Tech Stack
 
-⸻
+| Layer         | Tech                         |
+|---------------|-------------------------------|
+| Frontend      | [Vue 3](https://vuejs.org/) (via CDN) |
+| Styling       | [TailwindCSS](https://tailwindcss.com/) (via CDN) |
+| Deployment    | [GitHub Pages](https://pages.github.com/) |
+| Markup        | Vanilla HTML5 / Markdown |
 
-Stack
-	•	Vue 3 (via CDN)
-	•	TailwindCSS (via CDN + custom config)
-	•	GitHub Pages (for deployment)
-	•	Vanilla HTML/CSS/JS (zero build tooling)
+---
 
-⸻
+## 🗂️ Project Structure
 
-Project Structure
+```text
+index.html
+└── #app (Vue Mount Point)
+    ├── NavBar (component)
+    ├── Hero
+    ├── About
+    ├── Projects (dynamic from data array)
+    ├── Logs (dynamic from data array)
+    ├── Contact
+    └── Footer
+```
 
-index.html  (root file, imports Vue and TailwindCDNs)
-↳ #app (Vue mount point)
- ↳ NavBar.vue (inline template)
- ↳ Hero.vue
- ↳ About.vue
- ↳ Projects.vue (dynamic project list)
- ↳ Logs.vue (dynamic blog/log list)
- ↳ Contact.vue
- ↳ Footer.vue
+---
 
-Everything is loaded in-browser: pure Vue runtime + Tailwind styles, fully responsive.
+## 🚀 Quick Start
 
-⸻
-
-Local Development
-
-No install steps required!
-
-Simply clone the repo and open index.html directly in your browser:
-
+```bash
+# Clone the repo
 git clone https://github.com/Radical-Coder/learning-is-radical.git
-cd learning-is-radical
+
+# Open the index.html file directly in your browser
 open index.html
+```
 
-Or drag and drop index.html into your browser — that’s it.
+✅ No install steps.  
+✅ No build steps.  
+✅ No node_modules hell.  
 
-⸻
+Just **open and go**.
 
-Future Enhancements
-	•	Move project and log data to external .json files (async fetched at mount).
-	•	Add blog engine powered by Markdown-to-HTML parser.
-	•	Implement smooth page transitions using Vue <transition> components.
-	•	Custom 404 page.
-	•	Deploy under radical.codes
+---
 
-⸻
+## 🧪 Future Enhancements
 
-Author
+- [ ] Fetch projects/logs from external `.json`
+- [ ] Add simple Markdown blog system
+- [ ] Smooth transition animations (Vue `<transition>`)
+- [ ] Custom 404 page
+- [ ] Domain mapping to `radical.codes`
 
-👨‍💻 Ryan Gonyon — @theradicalcoder
+---
 
-Building systems, telling stories, forging new frameworks of resistance and creativity through code.
+## 👨‍💻 Author
 
-⸻
+**Ryan Gonyon**  
+> *Building systems, telling stories, forging frameworks of radical creativity through code.*
 
-🌟
+- Twitter: [@theradicalcoder](https://twitter.com/theradicalcoder)  
+- GitHub: [@Radical-Coder](https://github.com/Radical-Coder)  
+- LinkedIn: [Ryan Gonyon](https://linkedin.com/in/ryangonyon)
 
-“Learning isn’t just an act — it’s a rebellion.”
+---
+
+## 📜 License
+
+This project is licensed under the MIT License.  
+Feel free to fork, remix, build, and learn.
+
+---
+
+# 🌌
+
+> *"Learning is Radical. Building is Resistance. Growth is Power."*
+
+---
