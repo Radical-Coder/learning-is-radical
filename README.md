@@ -89,9 +89,14 @@ Just **open and go**.
 **Ryan Gonyon**  
 > *Building systems, telling stories, forging frameworks of radical creativity through code.*
 
-- Twitter: [@theradicalcoder](https://twitter.com/theradicalcoder)  
-- GitHub: [@Radical-Coder](https://github.com/Radical-Coder)  
+- GitHub: [@Radical-Coder](https://github.com/Radical-Coder)
+- Twitter / X: [@theradicalcoder](https://twitter.com/theradicalcoder)
+- YouTube: [@radicalcoder](https://www.youtube.com/@radicalcoder)
+- Instagram: [@theradicalcoder](https://instagram.com/theradicalcoder)
+- Threads: [@theradicalcoder](https://www.threads.net/@theradicalcoder)
+- Bluesky: [@radicalcoder.bsky.social](https://bsky.app/profile/radicalcoder.bsky.social)
 - LinkedIn: [Ryan Gonyon](https://linkedin.com/in/ryangonyon)
+- Email: [coderradical@gmail.com](mailto:coderradical@gmail.com)
 
 ---
 
