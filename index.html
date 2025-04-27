@@ -1,124 +1,166 @@
+<!-- Radical Coder Site – Vue + TailwindCDN version -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Radical Coder – Learning is Radical</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --bg-900:#0d0d0d;--bg-800:#171717;--bg-700:#212121;
-      --accent:#ff6b00;--accent-light:#ffa347;
-      --txt-100:#fff;--txt-200:#cacaca;
-      --ff-main:'Inter',sans-serif;--trans:200ms cubic-bezier(.4,0,.2,1);
-      --max:1040px
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tailwind custom palette -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bg: {
+              900: '#0d0d0d',
+              800: '#171717'
+            },
+            accent: '#ff6b00',
+            accentLight: '#ffa347'
+          },
+          fontFamily: { inter: ['Inter', 'sans-serif'] }
+        }
+      }
     }
-    *,*:before,*:after{box-sizing:border-box;margin:0;padding:0}
-    html{scroll-behavior:smooth}
-    body{font-family:var(--ff-main);background:var(--bg-900);color:var(--txt-100);line-height:1.6}
-    a{color:inherit;text-decoration:none}
-    .container{width:90%;max-width:var(--max);margin:auto}
-    .btn{display:inline-block;padding:.85rem 1.8rem;background:var(--accent);color:#000;font-weight:600;border-radius:8px;transition:var(--trans)}
-    .btn:hover{background:var(--accent-light)}
-    header{position:fixed;top:0;left:0;width:100%;z-index:999;background:rgba(13,13,13,.7);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.05)}
-    nav{display:flex;justify-content:space-between;align-items:center;height:72px}
-    .logo{font-size:1.1rem;font-weight:800;color:var(--accent)}
-    .nav-links{display:flex;gap:1.5rem;font-size:.95rem}
-    .nav-links a{color:var(--txt-200);transition:var(--trans)}.nav-links a:hover{color:var(--accent)}
-    #hero{padding-top:72px;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:radial-gradient(circle at top left,#1f1f1f 0%,var(--bg-900) 70%)}
-    #hero h1{font-size:clamp(2.5rem,5vw,4rem);font-weight:800;margin-bottom:1rem}
-    #hero p{max-width:640px;font-size:1.1rem;color:var(--txt-200)}
-    section{padding:5rem 0}
-    h2.section-title{font-size:2.2rem;margin-bottom:1.2rem;color:var(--accent)}
-    #about p{font-size:1.05rem;color:var(--txt-200);margin-bottom:1rem}
-    .project-grid{display:grid;gap:2rem;margin-top:2rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
-    .project-card{background:var(--bg-800);padding:1.6rem;border-radius:12px;display:flex;flex-direction:column;transition:var(--trans);border:1px solid transparent}
-    .project-card:hover{transform:translateY(-6px);border-color:var(--accent-light)}
-    .project-card h3{font-size:1.25rem;margin-bottom:.5rem}
-    .project-card p{flex:1;font-size:.9rem;color:var(--txt-200)}
-    .project-card a{margin-top:1rem;font-size:.85rem;color:var(--accent);font-weight:600}
-    .blog-list{list-style:none;margin-top:1.5rem}
-    .blog-link{display:block;padding:.8rem 0;border-bottom:1px solid rgba(255,255,255,.05);transition:var(--trans)}
-    .blog-link:hover{color:var(--accent);transform:translateX(4px)}
-    .contact-links{display:flex;flex-wrap:wrap;gap:1rem;margin-top:1.2rem}
-    .contact-links a{color:var(--accent);font-weight:600;font-size:.9rem}
-    footer{text-align:center;padding:2.5rem 0;color:var(--txt-200);font-size:.8rem}
-    @media(max-width:600px){.nav-links{display:none}}
-  </style>
+  </script>
+  <!-- Vue 3 CDN -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 </head>
-<body>
-  <header>
-    <div class="container">
-      <nav>
-        <div class="logo">🚀 Radical&nbsp;Coder</div>
-        <div class="nav-links">
-          <a href="#about">About</a>
-          <a href="#projects">Projects</a>
-          <a href="#logs">Logs</a>
-          <a href="#contact">Contact</a>
+
+<body class="font-inter bg-bg-900 text-white scroll-smooth">
+  <!-- App Root  -->
+  <div id="app"></div>
+
+  <!-- Templates / Components -->
+  <script type="module">
+    const { createApp, reactive } = Vue
+
+    /* Navbar */
+    const NavBar = {
+      template: `
+      <header class="fixed inset-x-0 top-0 z-50 backdrop-blur bg-bg-900/70 border-b border-white/10">
+        <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+          <span class="font-bold text-accent text-lg">🚀 Radical Coder</span>
+          <div class="hidden sm:flex gap-6 text-sm text-zinc-300">
+            <a href="#about" class="hover:text-accent">About</a>
+            <a href="#projects" class="hover:text-accent">Projects</a>
+            <a href="#logs" class="hover:text-accent">Logs</a>
+            <a href="#contact" class="hover:text-accent">Contact</a>
+          </div>
+        </nav>
+      </header>`
+    }
+
+    /* Hero */
+    const Hero = {
+      template: `
+      <section id="hero" class="min-h-screen flex flex-col justify-center items-center text-center bg-gradient-to-br from-zinc-800 to-bg-900 pt-20">
+        <h1 class="text-[clamp(2.5rem,5vw,4rem)] font-extrabold mb-4">Learning is Radical</h1>
+        <p class="max-w-xl text-lg text-zinc-300 leading-relaxed">
+          10-year software engineer. Relentless learner. Builder of evolving systems.<br>
+          Turning curiosity into code — and code into communities of creative resistance.
+        </p>
+        <a href="#about" class="mt-8 inline-block px-6 py-3 rounded-lg font-semibold bg-accent text-black hover:bg-accentLight transition">Explore My Work</a>
+      </section>`
+    }
+
+    /* About */
+    const About = {
+      template: `
+      <section id="about" class="container mx-auto px-4 py-20">
+        <h2 class="text-3xl font-bold text-accent mb-6">About Me</h2>
+        <p class="text-zinc-300 mb-4">
+          I’m Ryan — <strong>Radical Coder</strong>. For a decade I’ve architected production systems, shipped cross-platform apps, debated tech & policy live, and pushed AI as a tool for human empowerment.
+        </p>
+        <p class="text-zinc-300">
+          My playground sits where <strong>software engineering, storytelling, and socio-tech critique</strong> meet. If you’re building tools, movements, or ideas that lift people up, I probably want in.
+        </p>
+      </section>`
+    }
+
+    /* Projects */
+    const Projects = {
+      data() {
+        return {
+          projects: [
+            { title: 'Context Scope Visualizer', desc: 'Interactive component that visualizes real-time LLM token budgets so devs can prototype AI features without hitting context walls.', link: '#' },
+            { title: 'Resistance OS (Prototype)', desc: 'Modular framework & stream series mapping misinformation flows into a live, user-extendable resistance toolkit.', link: '#' },
+            { title: 'Vibe Coding Workshops', desc: 'Rapid-prototyping sessions teaching beginners to co-build with AI and refactor into production-grade apps.', link: '#' }
+          ]
+        }
+      }
+      , template: `
+      <section id="projects" class="container mx-auto px-4 py-20">
+        <h2 class="text-3xl font-bold text-accent mb-6">Selected Projects</h2>
+        <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <article v-for="p in projects" :key="p.title" class="bg-bg-800 border border-white/10 rounded-xl p-6 flex flex-col hover:-translate-y-1 transition">
+            <h3 class="font-semibold text-lg mb-2">{{p.title}}</h3>
+            <p class="text-sm text-zinc-300 flex-1">{{p.desc}}</p>
+            <a :href="p.link" class="mt-4 text-accent text-sm font-semibold hover:underline">View →</a>
+          </article>
         </div>
-      </nav>
-    </div>
-  </header>
+      </section>`
+    }
 
-  <section id="hero">
-    <h1>Learning&nbsp;is&nbsp;Radical</h1>
-    <p>10‑year software engineer. Relentless learner. Builder of evolving systems. Turning curiosity into code — and code into communities of creative resistance.</p>
-    <a href="#about" class="btn">Explore My Work</a>
-  </section>
+    /* Logs */
+    const Logs = {
+      data() {
+        return {
+          logs: [
+            { title: 'Shipping in the Open: One-Night Site Launch', link: '#' },
+            { title: 'Context Windows & Conscience: Ethical AI UX', link: '#' },
+            { title: 'From Chaos to Framework: 10 Years of Side Projects', link: '#' }
+          ]
+        }
+      }
+      , template: `
+      <section id="logs" class="container mx-auto px-4 py-20">
+        <h2 class="text-3xl font-bold text-accent mb-6">Latest Learning Logs</h2>
+        <ul>
+          <li v-for="l in logs" :key="l.title" class="border-b border-white/10 py-3">
+            <a :href="l.link" class="hover:text-accent transition">{{l.title}}</a>
+          </li>
+        </ul>
+        <p class="mt-4 text-zinc-400 italic">More essays & reflections on the way…</p>
+      </section>`
+    }
 
-  <section id="about" class="container">
-    <h2 class="section-title">About Me</h2>
-    <p>I’m Ryan — <strong>Radical Coder</strong>. For a decade I’ve architected production systems, shipped cross‑platform apps, debated tech & policy live, and pushed AI as a tool for human empowerment.</p>
-    <p>My playground sits where <strong>software engineering, storytelling, and socio‑tech critique</strong> meet. If you’re building tools, movements, or ideas that lift people up, I probably want in.</p>
-  </section>
+    /* Contact */
+    const Contact = {
+      template: `
+      <section id="contact" class="container mx-auto px-4 py-20">
+        <h2 class="text-3xl font-bold text-accent mb-6">Get in Touch</h2>
+        <p class="text-zinc-300">Have a project, collaboration idea, or just want to nerd out about AI & tech for good? Let’s connect.</p>
+        <div class="mt-6 flex flex-wrap gap-4 text-sm font-semibold">
+          <a href="mailto:coderradical@gmail.com" class="text-accent">Email</a>
+          <a href="https://github.com/Radical-Coder" target="_blank" class="text-accent">GitHub</a>
+          <a href="https://twitter.com/theradicalcoder" target="_blank" class="text-accent">Twitter</a>
+          <a href="https://linkedin.com/in/ryangonyon" target="_blank" class="text-accent">LinkedIn</a>
+        </div>
+      </section>`
+    }
 
-  <section id="projects" class="container">
-    <h2 class="section-title">Selected Projects</h2>
-    <div class="project-grid">
-      <div class="project-card">
-        <h3>Context Scope Visualizer</h3>
-        <p>Interactive component that visualizes real‑time LLM token budgets so devs can prototype AI features without hitting context walls.</p>
-        <a href="#">GitHub →</a>
-      </div>
-      <div class="project-card">
-        <h3>Resistance OS (Prototype)</h3>
-        <p>Modular framework & stream series mapping misinformation flows into a live, user‑extendable resistance toolkit.</p>
-        <a href="#">Concept →</a>
-      </div>
-      <div class="project-card">
-        <h3>Vibe Coding Workshops</h3>
-        <p>Rapid‑prototyping sessions teaching beginners to co‑build with AI and refactor into production‑grade apps.</p>
-        <a href="#">Playlist →</a>
-      </div>
-    </div>
-  </section>
+    const SiteFooter = {
+      template: `<footer class="text-center text-zinc-400 py-10">© 2025 Radical Coder · Built with Vue &amp; Tailwind CDN · v1.0</footer>`
+    }
 
-  <section id="logs" class="container">
-    <h2 class="section-title">Latest Learning Logs</h2>
-    <ul class="blog-list">
-      <li><a class="blog-link" href="#">Shipping in the Open: One‑Night Site Launch</a></li>
-      <li><a class="blog-link" href="#">Context Windows & Conscience: Ethical AI UX</a></li>
-      <li><a class="blog-link" href="#">From Chaos to Framework: 10 Years of Side Projects</a></li>
-    </ul>
-    <p style="margin-top:1.2rem;color:var(--txt-200)"><em>More essays & reflections on the way…</em></p>
-  </section>
-
-  <section id="contact" class="container">
-    <h2 class="section-title">Get in Touch</h2>
-    <p>Have a project, collaboration idea, or just want to nerd out about AI & tech for good? Let’s connect.</p>
-    <div class="contact-links">
-      <a href="mailto:coderradical@gmail.com">Email</a>
-      <a href="https://github.com/Radical-Coder" target="_blank">GitHub</a>
-      <a href="https://twitter.com/theradicalcoder" target="_blank">Twitter</a>
-      <a href="https://linkedin.com/in/ryangonyon" target="_blank">LinkedIn</a>
-    </div>
-  </section>
-
-  <footer>
-    © 2025 Radical Coder · Built with 💻 & simple HTML/CSS · v0.2
-  </footer>
+    /* Root App */
+    createApp({
+      components: { NavBar, Hero, About, Projects, Logs, Contact, SiteFooter }, template: `
+      <NavBar/>
+      <main>
+        <Hero/>
+        <About/>
+        <Projects/>
+        <Logs/>
+        <Contact/>
+      </main>
+      <SiteFooter/>
+    `}).mount('#app')
+  </script>
 </body>
+
 </html>
