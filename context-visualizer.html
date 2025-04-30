@@ -66,11 +66,13 @@
             </div>
 
             <p class="text-center text-xs text-slate-500 pt-4">
-                Estimation: 1 token ≈ {{ CHARS_PER_TOKEN }} characters. Actual tokenization may vary per model.
+                Estimation: 1 token ≈ {{ CHARS_PER_TOKEN }} characters. Actual tokenization may vary per model.<br>
+                *Model context windows based on publicly available information (April 2025). Gemini 2.5 models listed are currently in Preview status.
             </p>
         </div>
         <footer class="text-center mt-12 text-slate-500 text-sm">
             <p>A tool for comparing LLM context window usage.</p>
+            <p>Model data current as of: April 29, 2025</p>
         </footer>
     </div>
 
@@ -78,14 +80,15 @@
     <script>
         const { createApp, ref, computed, defineComponent } = Vue;
 
+        // Updated list reflecting current leading models (April 29, 2025)
         const TOKEN_LIMIT_OPTIONS = [
-            { label: 'GPT-3.5 Turbo (4K)', value: 4096 },
-            { label: 'GPT-4 (8K)', value: 8192 },
-            { label: 'GPT-3.5 Turbo (16K)', value: 16384 },
-            { label: 'GPT-4 (32K)', value: 32768 },
-            { label: 'GPT-4 Turbo (128K)', value: 128000 },
-            { label: 'Claude 3 Opus (200K)', value: 200000 },
-            { label: 'Gemini 1.5 Pro (1M)', value: 1000000 },
+            { label: 'Mistral Large (32K)', value: 32768 },
+            { label: 'Meta Llama 3.1 (128K)', value: 128000 },
+            { label: 'OpenAI GPT-4o (128K)', value: 128000 },
+            { label: 'Anthropic Claude 3.5 Sonnet (200K)', value: 200000 },
+            // Updated Gemini Models based on Preview versions (April 2025)
+            { label: 'Google Gemini 2.5 Flash Preview (1M)', value: 1048576 }, // Using 1024*1024
+            { label: 'Google Gemini 2.5 Pro Preview (1M)', value: 1048576 },  // Using 1024*1024
         ];
 
         const CHARS_PER_TOKEN = 4; // Basic estimation
@@ -176,7 +179,9 @@
 
                 const percentageUsed = computed(() => {
                     if (totalTokenLimit.value === 0) return 0;
-                    return Math.min((currentTokensUsed.value / totalTokenLimit.value) * 100, 100);
+                    // Ensure percentage doesn't exceed 100 visually, even if tokens exceed limit
+                    const rawPercentage = (currentTokensUsed.value / totalTokenLimit.value) * 100;
+                    return Math.min(rawPercentage, 100);
                 });
 
                 const isOverLimit = computed(() => currentTokensUsed.value > totalTokenLimit.value);
@@ -208,7 +213,7 @@
                     handleLimitChangeInternal,
                     handleInputChangeInternal,
                     formatNumber,
-                    // Constants/Props
+                    // Constants/Props passed through
                     CHARS_PER_TOKEN,
                 };
             },
@@ -227,8 +232,7 @@
                                 @change="handleLimitChangeInternal"
                                 class="w-full bg-slate-700 border border-slate-600 text-slate-100 rounded-md shadow-sm py-2.5 px-3 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
                             >
-                                <option v-for="option in tokenLimitOptions" :key="option.value" :value="option.value">
-                                    {{ option.label }} ({{ formatNumber(option.value) }} tokens)
+                                <option v-for="option in tokenLimitOptions" :key="option.label" :value="option.value"> {{ option.label }} ({{ formatNumber(option.value) }} tokens)
                                 </option>
                             </select>
                         </div>
@@ -276,42 +280,30 @@
         // === Main Vue App ===
         const app = createApp({
             setup() {
+                // Updated defaults to reflect current models (GPT-4o vs Gemini 2.5 Pro Preview)
                 const modelConfigs = ref([
-                    { id: 'modelA', name: 'Model A', totalTokenLimit: TOKEN_LIMIT_OPTIONS[1].value, inputText: '' },
-                    { id: 'modelB', name: 'Model B', totalTokenLimit: TOKEN_LIMIT_OPTIONS[0].value, inputText: '' },
+                     // Default to GPT-4o (128K) - Index 2
+                    { id: 'modelA', name: 'Model A', totalTokenLimit: TOKEN_LIMIT_OPTIONS[2].value, inputText: '' },
+                     // Default to Gemini 2.5 Pro Preview (1M) - Index 5
+                    { id: 'modelB', name: 'Model B', totalTokenLimit: TOKEN_LIMIT_OPTIONS[5].value, inputText: '' },
                 ]);
 
                 const handleModelLimitChange = ({ id, limit }) => {
-                    // No need to update state here as ModelVisualizer handles its own limit state now
-                    // This handler remains if you needed parent-level logic based on the change
+                    // Parent logic can be added here if needed in response to a limit change
                     // console.log(`Limit changed for ${id}: ${limit}`);
                 };
 
                 const handleModelInputChange = ({ id, text }) => {
-                    // No need to update state here as ModelVisualizer handles its own input state now
-                    // This handler remains if you needed parent-level logic based on the change
+                    // Parent logic can be added here if needed in response to an input change
                     // console.log(`Input changed for ${id}: ${text.length} chars`);
-
-                    // Example: Sync input between models (optional)
-                    // syncInputAcrossModels(id, text);
                 };
-
-                 // Optional: Function to sync text between models if desired
-                const syncInputAcrossModels = (sourceId, text) => {
-                     modelConfigs.value = modelConfigs.value.map(config => {
-                         // If you uncomment this, also change ModelVisualizer to accept inputText as a prop again
-                         // and emit 'update:inputText' or similar instead of handling it internally.
-                         // This current setup keeps each visualizer independent.
-                         return config.id !== sourceId ? { ...config, inputText: text } : config;
-                     });
-                 };
 
 
                 return {
                     modelConfigs,
                     handleModelLimitChange,
                     handleModelInputChange,
-                    TOKEN_LIMIT_OPTIONS, // Make available to template if needed
+                    TOKEN_LIMIT_OPTIONS, // Make available to template
                     CHARS_PER_TOKEN      // Make available to template
                 };
             }
