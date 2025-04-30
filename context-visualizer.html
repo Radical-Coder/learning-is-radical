@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Context Comparison</title>
+    <meta name="description" content="Compare LLM context window usage side-by-side with live updates and token estimation.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Optional: Add custom base styles or component styles here if needed */
+        body {
+            font-family: Inter, sans-serif; /* Example font stack */
+        }
+        /* Improve focus visibility */
+        *:focus-visible {
+            outline: 2px solid rgb(56 189 248); /* sky-400 */
+            outline-offset: 2px;
+        }
+        textarea {
+             scrollbar-width: thin;
+             scrollbar-color: rgb(71 85 105) rgb(51 65 85); /* slate-500 slate-700 */
+        }
+        textarea::-webkit-scrollbar {
+            width: 8px;
+        }
+        textarea::-webkit-scrollbar-track {
+            background: rgb(51 65 85); /* slate-700 */
+            border-radius: 4px;
+        }
+        textarea::-webkit-scrollbar-thumb {
+            background-color: rgb(71 85 105); /* slate-500 */
+            border-radius: 4px;
+            border: 2px solid rgb(51 65 85); /* slate-700 */
+        }
+    </style>
+</head>
+<body class="bg-slate-900">
+
+    <div id="app" class="min-h-screen text-slate-100 flex flex-col items-center p-4 sm:p-6 lg:p-8 selection:bg-sky-500 selection:text-white">
+        <div class="w-full max-w-6xl space-y-8">
+            <header class="text-center mb-8">
+                <div class="flex items-center justify-center mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sky-400 mr-3">
+                        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                        <polyline points="2 17 12 22 22 17"></polyline>
+                        <polyline points="2 12 12 17 22 12"></polyline>
+                    </svg>
+                    <h1 class="text-3xl sm:text-4xl font-bold text-sky-400">LLM Context Comparison</h1>
+                </div>
+                <p class="text-slate-400 text-sm sm:text-base">Compare token usage across different models or configurations side-by-side.</p>
+            </header>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+                <model-visualizer
+                    v-for="config in modelConfigs"
+                    :key="config.id"
+                    :id="config.id"
+                    :name="config.name"
+                    :initial-limit="config.totalTokenLimit"
+                    :initial-input="config.inputText"
+                    :token-limit-options="TOKEN_LIMIT_OPTIONS"
+                    @limit-change="handleModelLimitChange"
+                    @input-change="handleModelInputChange"
+                ></model-visualizer>
+            </div>
+
+            <p class="text-center text-xs text-slate-500 pt-4">
+                Estimation: 1 token ≈ {{ CHARS_PER_TOKEN }} characters. Actual tokenization may vary per model.
+            </p>
+        </div>
+        <footer class="text-center mt-12 text-slate-500 text-sm">
+            <p>A tool for comparing LLM context window usage.</p>
+        </footer>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <script>
+        const { createApp, ref, computed, defineComponent } = Vue;
+
+        const TOKEN_LIMIT_OPTIONS = [
+            { label: 'GPT-3.5 Turbo (4K)', value: 4096 },
+            { label: 'GPT-4 (8K)', value: 8192 },
+            { label: 'GPT-3.5 Turbo (16K)', value: 16384 },
+            { label: 'GPT-4 (32K)', value: 32768 },
+            { label: 'GPT-4 Turbo (128K)', value: 128000 },
+            { label: 'Claude 3 Opus (200K)', value: 200000 },
+            { label: 'Gemini 1.5 Pro (1M)', value: 1000000 },
+        ];
+
+        const CHARS_PER_TOKEN = 4; // Basic estimation
+
+        // === RadialProgress Component ===
+        const RadialProgress = defineComponent({
+            props: {
+                percentage: {
+                    type: Number,
+                    required: true,
+                    default: 0
+                }
+            },
+            setup(props) {
+                const size = 160; // Corresponds to w-40 h-40
+                const strokeWidth = 16;
+                const radius = (size - strokeWidth) / 2;
+                const circumference = radius * 2 * Math.PI;
+
+                const offset = computed(() => circumference - (props.percentage / 100) * circumference);
+
+                const progressColor = computed(() => {
+                    if (props.percentage > 90) return 'stroke-red-500';
+                    if (props.percentage > 75) return 'stroke-yellow-500';
+                    return 'stroke-sky-500';
+                });
+
+                return {
+                    size,
+                    strokeWidth,
+                    radius,
+                    circumference,
+                    offset,
+                    progressColor,
+                    roundedPercentage: computed(() => Math.round(props.percentage))
+                };
+            },
+            template: `
+                <div class="relative w-40 h-40 flex-shrink-0">
+                    <svg :width="size" :height="size" :viewBox="'0 0 ' + size + ' ' + size" class="transform -rotate-90">
+                        <circle
+                            class="text-slate-600"
+                            stroke="currentColor"
+                            fill="transparent"
+                            :stroke-width="strokeWidth"
+                            :r="radius"
+                            :cx="size / 2"
+                            :cy="size / 2"
+                        />
+                        <circle
+                            :class="[progressColor, 'transition-all duration-300 ease-in-out']"
+                            stroke="currentColor"
+                            fill="transparent"
+                            :stroke-width="strokeWidth"
+                            :stroke-dasharray="circumference"
+                            :stroke-dashoffset="offset"
+                            stroke-linecap="round"
+                            :r="radius"
+                            :cx="size / 2"
+                            :cy="size / 2"
+                        />
+                    </svg>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <span class="text-3xl font-bold text-slate-100">{{ roundedPercentage }}%</span>
+                    </div>
+                </div>
+            `
+        });
+
+        // === ModelVisualizer Component ===
+        const ModelVisualizer = defineComponent({
+            components: {
+                'radial-progress': RadialProgress
+            },
+            props: {
+                id: { type: String, required: true },
+                name: { type: String, required: true },
+                initialLimit: { type: Number, required: true },
+                initialInput: { type: String, default: '' },
+                tokenLimitOptions: { type: Array, required: true }
+            },
+            emits: ['limit-change', 'input-change'],
+            setup(props, { emit }) {
+                const totalTokenLimit = ref(props.initialLimit);
+                const inputText = ref(props.initialInput);
+
+                const currentTokensUsed = computed(() => Math.ceil(inputText.value.length / CHARS_PER_TOKEN));
+
+                const percentageUsed = computed(() => {
+                    if (totalTokenLimit.value === 0) return 0;
+                    return Math.min((currentTokensUsed.value / totalTokenLimit.value) * 100, 100);
+                });
+
+                const isOverLimit = computed(() => currentTokensUsed.value > totalTokenLimit.value);
+
+                const handleLimitChangeInternal = (event) => {
+                    const newLimit = Number(event.target.value);
+                    totalTokenLimit.value = newLimit;
+                    emit('limit-change', { id: props.id, limit: newLimit });
+                };
+
+                const handleInputChangeInternal = (event) => {
+                    const newText = event.target.value;
+                    inputText.value = newText;
+                    emit('input-change', { id: props.id, text: newText });
+                };
+
+                // Format numbers with commas
+                const formatNumber = (num) => num.toLocaleString();
+
+                return {
+                    // State
+                    totalTokenLimit,
+                    inputText,
+                    // Computed
+                    currentTokensUsed,
+                    percentageUsed,
+                    isOverLimit,
+                    // Methods
+                    handleLimitChangeInternal,
+                    handleInputChangeInternal,
+                    formatNumber,
+                    // Constants/Props
+                    CHARS_PER_TOKEN,
+                };
+            },
+            template: `
+                <div :class="['w-full bg-slate-800 shadow-xl rounded-xl p-6 space-y-6 border', isOverLimit ? 'border-red-600/50' : 'border-slate-700/50']">
+                    <h2 class="text-2xl font-semibold text-center text-sky-400 mb-2">{{ name }}</h2>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label :for="'tokenLimit-' + id" class="block text-sm font-medium text-slate-300 mb-1">
+                                Token Limit:
+                            </label>
+                            <select
+                                :id="'tokenLimit-' + id"
+                                :value="totalTokenLimit"
+                                @change="handleLimitChangeInternal"
+                                class="w-full bg-slate-700 border border-slate-600 text-slate-100 rounded-md shadow-sm py-2.5 px-3 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+                            >
+                                <option v-for="option in tokenLimitOptions" :key="option.value" :value="option.value">
+                                    {{ option.label }} ({{ formatNumber(option.value) }} tokens)
+                                </option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label :for="'inputText-' + id" class="block text-sm font-medium text-slate-300 mb-1">
+                                Text for {{ name }}:
+                            </label>
+                            <textarea
+                                :id="'inputText-' + id"
+                                :value="inputText"
+                                @input="handleInputChangeInternal"
+                                :placeholder="'Paste or type text for ' + name + '...'"
+                                rows="8"
+                                class="w-full bg-slate-700 border border-slate-600 text-slate-100 rounded-md shadow-sm p-3 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 resize-y placeholder-slate-500"
+                            ></textarea>
+                        </div>
+                    </div>
+
+                    <section :class="['flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-lg', isOverLimit ? 'bg-red-900/40 border border-red-700' : 'bg-slate-700/80']">
+                        <div class="text-center md:text-left space-y-1 flex-grow">
+                            <h3 :class="['text-lg font-semibold mb-1', isOverLimit ? 'text-red-400' : 'text-sky-400']">Usage</h3>
+                            <p :class="['text-2xl font-bold', isOverLimit ? 'text-red-300' : 'text-slate-100']">
+                                {{ formatNumber(currentTokensUsed) }}
+                                <span :class="['text-base font-medium', isOverLimit ? 'text-red-400' : 'text-slate-400']"> / {{ formatNumber(totalTokenLimit) }} tokens</span>
+                            </p>
+                            <p :class="['text-xs', isOverLimit ? 'text-red-400' : 'text-slate-400']">
+                                {{ formatNumber(inputText.length) }} characters
+                            </p>
+                             <p v-if="isOverLimit" class="text-xs text-red-400 font-medium flex items-center justify-center md:justify-start pt-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1">
+                                    <path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+                                    <path d="M12 9v4"></path><path d="M12 17h.01"></path>
+                                </svg>
+                                Over limit!
+                            </p>
+                        </div>
+
+                        <radial-progress :percentage="percentageUsed" />
+                    </section>
+                </div>
+            `
+        });
+
+        // === Main Vue App ===
+        const app = createApp({
+            setup() {
+                const modelConfigs = ref([
+                    { id: 'modelA', name: 'Model A', totalTokenLimit: TOKEN_LIMIT_OPTIONS[1].value, inputText: '' },
+                    { id: 'modelB', name: 'Model B', totalTokenLimit: TOKEN_LIMIT_OPTIONS[0].value, inputText: '' },
+                ]);
+
+                const handleModelLimitChange = ({ id, limit }) => {
+                    // No need to update state here as ModelVisualizer handles its own limit state now
+                    // This handler remains if you needed parent-level logic based on the change
+                    // console.log(`Limit changed for ${id}: ${limit}`);
+                };
+
+                const handleModelInputChange = ({ id, text }) => {
+                    // No need to update state here as ModelVisualizer handles its own input state now
+                    // This handler remains if you needed parent-level logic based on the change
+                    // console.log(`Input changed for ${id}: ${text.length} chars`);
+
+                    // Example: Sync input between models (optional)
+                    // syncInputAcrossModels(id, text);
+                };
+
+                 // Optional: Function to sync text between models if desired
+                const syncInputAcrossModels = (sourceId, text) => {
+                     modelConfigs.value = modelConfigs.value.map(config => {
+                         // If you uncomment this, also change ModelVisualizer to accept inputText as a prop again
+                         // and emit 'update:inputText' or similar instead of handling it internally.
+                         // This current setup keeps each visualizer independent.
+                         return config.id !== sourceId ? { ...config, inputText: text } : config;
+                     });
+                 };
+
+
+                return {
+                    modelConfigs,
+                    handleModelLimitChange,
+                    handleModelInputChange,
+                    TOKEN_LIMIT_OPTIONS, // Make available to template if needed
+                    CHARS_PER_TOKEN      // Make available to template
+                };
+            }
+        });
+
+        // Register Components
+        app.component('model-visualizer', ModelVisualizer);
+        // RadialProgress is registered within ModelVisualizer
+
+        // Mount App
+        app.mount('#app');
+
+    </script>
+
+</body>
+</html>
